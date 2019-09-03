@@ -22,6 +22,25 @@ ratingStory.addChapter(
   ]
 )
 
+ratingStory.addChapter(
+  'vertical',
+  story => {
+    var obj = {
+      color: 'red',
+      border: 'blue',
+      borderWidth: 2,
+      horizontal: 'false',
+      width: 100,
+      height: 600
+
+    }
+    rating(story, obj)
+  },
+  [
+    notes('Vertical arrangement.')
+  ]
+)
+
 // ratingStory.addChapter(
 //   'with a 30px dimensions',
 //   story => {

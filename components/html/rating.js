@@ -9,7 +9,7 @@ export default function createSvg (container, obj) {
     container.appendChild(svg)
     var box
 
-    if (obj.horizontal) { // Horizontal arrangement
+    if (obj.horizontal === 'true') { // Horizontal arrangement
       if ((svgWidth / 5) > svgHeight) { box = svgHeight } else { box = svgWidth / 5 }
 
       var startWidth = (box / 2) + (svgWidth - (box * 5)) / 2
@@ -26,7 +26,7 @@ export default function createSvg (container, obj) {
       startWidth = (box / 2) + (svgWidth - box) / 2
 
       for (let i = 0; i < 5; i++) {
-        createPath(svg, box, startWidth, startHeight)
+        createPath(svg, box, startWidth, startHeight, obj)
         startHeight += box
       }
     }
