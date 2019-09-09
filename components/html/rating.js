@@ -1,16 +1,35 @@
 // import { url } from "inspector";
 
+var defaultObj = {
+  width: '500',
+  height: '100',
+  fill: '#ff0000',
+  ratedFill: '#ff0000',
+  unratedFill: '#ff7f7f',
+  stroke: '#000000',
+  ratedStroke: '#000000',
+  unratedStroke: '#666666',
+  strokeWidth: 2,
+  flow: 'row',
+  orientation: 'LtoR',
+  noOfStars: 5,
+  rating: 3.5,
+  padding: 2,
+  justifyContent: 'center',
+  alignItems: 'center'
+}
+
 export default class Rating {
   constructor (container, obj) {
     this.obj = {}
     this.obj.width = (obj.width) ? (obj.width) : '500'
     this.obj.height = (obj.height) ? (obj.height) : '100'
-    this.obj.fill = (obj.fill) ? (obj.fill) : 'red'
-    this.obj.ratedFill = (obj.ratedFill) ? (obj.ratedFill) : 'red'
-    this.obj.unratedFill = (obj.unratedFill) ? (obj.unratedFill) : 'blue'
-    this.obj.stroke = (obj.stroke) ? (obj.stroke) : 'black'
-    this.obj.ratedStroke = (obj.ratedStroke) ? (obj.ratedStroke) : 'black'
-    this.obj.unratedStroke = (obj.unratedStroke) ? (obj.unratedStroke) : 'gray'
+    this.obj.fill = (obj.fill) ? (obj.fill) : '#ff0000'
+    this.obj.ratedFill = (obj.ratedFill) ? (obj.ratedFill) : '#ff0000'
+    this.obj.unratedFill = (obj.unratedFill) ? (obj.unratedFill) : '#ff7f7f'
+    this.obj.stroke = (obj.stroke) ? (obj.stroke) : '#000000'
+    this.obj.ratedStroke = (obj.ratedStroke) ? (obj.ratedStroke) : '#000000'
+    this.obj.unratedStroke = (obj.unratedStroke) ? (obj.unratedStroke) : '#666666'
     this.obj.strokeWidth = (obj.strokeWidth) ? (obj.strokeWidth) : '2'
     this.obj.orientation = (obj.orientation) ? (obj.orientation) : 'LtoR'
     this.obj.noOfStars = (obj.noOfStars) ? (obj.noOfStars) : 5
@@ -18,88 +37,56 @@ export default class Rating {
     this.obj.padding = (obj.padding) ? (obj.padding) : 5
     this.obj.justifyContent = (obj.justifyContent) ? (obj.justifyContent) : 'center'
     this.obj.alignItems = (obj.alignItems) ? (obj.alignItems) : 'center'
-    this.obj.box = calculateBoxSize(getWidth(this.obj.width), getHeight(this.obj.height), this.obj.orientation, this.obj.noOfStars)
-    this.obj.innerBox = this.obj.box - (2 * this.obj.padding)
+    this.obj.flow = 'row'
+    this.obj.box = 0
+    this.obj.innerBox = 0
     this.container = container
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    this.svg.setAttribute('width', this.obj.width)
-    this.svg.setAttribute('height', this.obj.height)
     this.container.appendChild(this.svg)
+    this._validateInput(defaultObj)
   }
 
   _validateInput (obj) {
     let flag = {
-      width: true,
-      height: true,
-      fill: true,
-      ratedFill: true,
-      unratedFill: true,
-      stroke: true,
-      ratedStroke: true,
-      unratedStroke: true,
-      strokeWidth: true,
-      orientation: true,
-      noOfStars: true,
-      rating: true,
-      padding: true,
-      justifyContent: true,
-      alignItems: true,
-      box: true
+      width: 'true',
+      height: 'true',
+      fill: 'true',
+      ratedFill: 'true',
+      unratedFill: 'true',
+      stroke: 'true',
+      ratedStroke: 'true',
+      unratedStroke: 'true',
+      strokeWidth: 'true',
+      orientation: 'true',
+      noOfStars: 'true',
+      rating: 'true',
+      padding: 'true',
+      justifyContent: 'true',
+      alignItems: 'true',
+      box: 'true'
 
     }
-    if (!getWidth(this.obj.width)) {
+
+    let calculatedWidth = getWidth(this.obj.width)
+    let calculatedHeight = getHeight(this.obj.height)
+    if (!calculatedWidth || calculatedWidth < 10) {
       this.obj.width = obj.width
-      // flag.width = false
     }
 
-    if (getWidth(this.obj.width) < 0) {
-      this.obj.width = obj.width
-      // flag.width = false
-    }
-
-    if (isNaN(getWidth(this.obj.width))) {
-      this.obj.width = obj.width
-      // flag.width = false
-    }
-
-    if (getWidth(this.obj.width) < 10) {
-      this.obj.width = obj.width
-      // flag.width = false
-    }
-
-    if (!getHeight(this.obj.height)) {
+    if (!calculatedHeight || calculatedHeight < 10) {
       this.obj.height = obj.height
-      // flag.height = false
-    }
-
-    if (getHeight(this.obj.height) < 0) {
-      this.obj.height = obj.height
-      // flag.width = false
-    }
-
-    if (isNaN(getHeight(this.obj.height))) {
-      this.obj.height = obj.height
-      // flag.width = false
-    }
-
-    if (getHeight(this.obj.height) < 10) {
-      this.obj.height = obj.height
-      // flag.width = false
     }
 
     if (checkHexValue(this.obj.fill)) {
       this.obj.fill = obj.fill
-      // flag.fill = false
     }
 
     if (checkHexValue(this.obj.ratedFill)) {
       this.obj.ratedFill = obj.ratedFill
-      // flag.fill = false
     }
 
     if (checkHexValue(this.obj.unratedFill)) {
       this.obj.unratedFill = obj.unratedFill
-      // flag.fill = false
     }
 
     if (this.obj.ratedFill === this.obj.unratedFill) {
@@ -112,17 +99,18 @@ export default class Rating {
 
     if (checkHexValue(this.obj.stroke)) {
       this.obj.stroke = obj.stroke
-      // flag.fill = false
     }
 
     if (checkHexValue(this.obj.ratedStroke)) {
       this.obj.ratedStroke = obj.ratedStroke
-      // flag.fill = false
     }
 
     if (checkHexValue(this.obj.unratedStroke)) {
       this.obj.unratedStroke = obj.unratedStroke
-      // flag.fill = false
+    }
+
+    if (this.obj.ratedStroke === this.obj.unratedStroke) {
+      this.obj.ratedStroke = this.obj.stroke
     }
 
     if (isNaN(this.obj.strokeWidth) || this.obj.strokeWidth < 0) {
@@ -133,12 +121,16 @@ export default class Rating {
       this.obj.orientation = obj.orientation
     }
 
-    if (isNaN(this.obj.noOfStars) || this.obj.noOfStars < 0 || this.obj.noOfStars === 0 || greaterThanMaximumStars(this.obj.box)) {
-      flag.noOfStars = false
+    if (isNaN(this.obj.noOfStars) || this.obj.noOfStars < 0 || this.obj.noOfStars === 0 || greaterThanMaximumStars(getWidth(this.obj.width), getHeight(this.obj.height), this.obj.orientation, this.obj.noOfStars)) {
+      this.obj.noOfStars = obj.noOfStars
     }
 
-    if (isNaN(this.obj.rating) || this.obj.rating < 0 || this.obj.rating > this.obj.noOfStars) {
+    if (isNaN(this.obj.rating) || this.obj.rating < 0) {
       this.obj.rating = obj.rating
+    }
+
+    if (this.obj.rating > this.obj.noOfStars) {
+      this.obj.rating = this.obj.noOfStars
     }
 
     if (isNaN(this.obj.padding) || greaterThanMaximumPadding(this.obj.box, this.obj.padding) || this.obj.padding < 0) {
@@ -157,16 +149,30 @@ export default class Rating {
       flag.box = false
     }
 
+    let drawSvg = true
     for (let prop in flag) {
-      if (!prop) { return false }
+      if (flag.hasOwnProperty(prop) && flag[prop] === 'false') { drawSvg = false }
     }
-    return true
+    if (drawSvg) { this._createSvg() }
+  }
+
+  _createSvg () {
+    let child = this.svg.lastElementChild
+    while (child) {
+      this.svg.removeChild(child)
+      child = this.svg.lastElementChild
+    }
+    this.svg.setAttribute('width', this.obj.width)
+    this.svg.setAttribute('height', this.obj.height)
+    this.obj.box = calculateBoxSize(getWidth(this.obj.width), getHeight(this.obj.height), this.obj.orientation, this.obj.noOfStars)
+    this.obj.innerBox = this.obj.box - (2 * this.obj.padding)
+    this._setPathAttribute()
   }
 
   _setPathAttribute () {
     let width = getWidth(this.obj.width)
     let height = getHeight(this.obj.height)
-    if (this.obj.orientation === 'LtoR' || this.obj.orientation === 'RtoL') {
+    if (this.flow === 'row') {
       this._createGradient(0, 100, 0, 0)
       let startHeight = (height - this.obj.box) / 2 + (this.obj.padding); let startWidth = this.obj.box / 2; let increment = this.obj.box
       if (this.obj.justifyContent === 'start') {
@@ -191,6 +197,17 @@ export default class Rating {
         startHeight += (height - (this.obj.box * this.obj.noOfStars)) / 2
       } else {
         startHeight += (height - (this.obj.box * this.obj.noOfStars))
+      }
+
+      if (this.obj.justifyContent === 'start') {
+
+      } else if (this.obj.justifyContent === 'end') {
+        startWidth += (width) - (this.obj.box * this.obj.noOfStars)
+      } else if (this.obj.justifyContent === 'center') {
+        startWidth += ((width) - (this.obj.box * this.obj.noOfStars)) / 2
+      } else {
+        startWidth += (width - (this.obj.box * this.obj.noOfStars)) / (this.obj.noOfStars)
+        increment += (width - (this.obj.box * this.obj.noOfStars)) / (this.obj.noOfStars)
       }
 
       for (let i = 0; i < this.obj.noOfStars; i++) {
@@ -262,15 +279,12 @@ export default class Rating {
     if (obj.unratedStroke) { this.obj.unratedStroke = obj.unratedStroke }
     if (obj.strokeWidth) { this.obj.strokeWidth = obj.strokeWidth }
     if (obj.orientation) { this.obj.orientation = obj.orientation }
-    if (obj.noOfStars) {
-      this.obj.noOfStars = obj.noOfStars
-      this.obj.box = calculateBoxSize(getWidth(this.obj.width), getHeight(this.obj.height), this.obj.orientation, this.obj.noOfStars)
-    }
+    if (obj.noOfStars) { this.obj.noOfStars = obj.noOfStars }
     if (obj.rating) { this.obj.rating = obj.rating }
     if (obj.padding) { this.obj.padding = obj.padding }
     if (obj.justifyContent) { this.obj.justifyContent = obj.justifyContent }
     if (obj.alignItems) { this.obj.alignItems = obj.alignItems }
-    if (this._validateInput(prevObj)) { this._setPathAttribute() }
+    this._validateInput(prevObj)
   }
 }
 
@@ -280,13 +294,14 @@ function checkHexValue (str) {
   return false
 }
 
-function calculateBoxSize (width, height, orientation, noOfStars) {
-  if (orientation === 'LtoR' || orientation === 'RtoL') {
+function calculateBoxSize (width, height, flow, noOfStars) {
+  if (flow === 'row') {
     return ((width / noOfStars) < height) ? (width / noOfStars) : height
   } else {
     return ((height / noOfStars) < width) ? (height / noOfStars) : width
   }
 }
+
 function getFraction (rating) {
   return (rating - (Math.trunc(rating))) * 100
 }
@@ -295,8 +310,9 @@ function getPartialRated (rating) {
   return Math.trunc(rating)
 }
 
-function greaterThanMaximumStars (box) {
-  if (box < 10) { return true }
+function greaterThanMaximumStars (width, height, orientation, noOfStars) {
+  let box = calculateBoxSize(width, height, orientation, noOfStars)
+  if (box <= 10) { return true }
   return false
 }
 
