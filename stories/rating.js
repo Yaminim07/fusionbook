@@ -7,11 +7,6 @@ ratingStory.addChapter(
   'Default Value',
   story => {
     var newRating = new Rating(story, {})
-    setTimeout(function () {
-      newRating._update({
-        noOfStars: 4
-      })
-    }, 3000)
   },
   [
     notes('Rating with default values')
@@ -24,15 +19,11 @@ ratingStory.addChapter(
     var newRating = new Rating(story, {
       width: '100',
       height: '800',
+      flow: 'column',
       orientation: 'TtoB',
       alignItems: 'end',
       justifyContent: 'start'
     })
-    setTimeout(function () {
-      newRating._update({
-        noOfStars: 4
-      })
-    }, 3000)
   },
   [
     notes('Vertical Arrangement')
@@ -43,8 +34,8 @@ ratingStory.addChapter(
   'Width or Height value 0',
   story => {
     var newRating = new Rating(story, {
-      width: 0,
-      height: 0
+      width: '0',
+      height: '0'
     })
   },
   [
@@ -131,10 +122,11 @@ ratingStory.addChapter(
   'ratedFill is equal to unratedFill and ratedStroke is equal to unratedStroke',
   story => {
     var newRating = new Rating(story, {
-      ratedFill: '#808080',
-      unratedFill: '#808080',
+      ratedFill: '#a52a2a',
+      unratedFill: '#a52a2a',
       ratedStroke: '#C0C0C0',
-      unratedStroke: '#C0C0C0'
+      unratedStroke: '#C0C0C0',
+      strokeWidth: 2
     })
   },
   [
@@ -187,7 +179,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For stroke-width valid and stroke invalid, default is applied')
+    notes('For stroke-width valid and stroke invalid, default stroke is applied')
   ]
 )
 
@@ -204,18 +196,18 @@ ratingStory.addChapter(
 )
 
 ratingStory.addChapter(
-  'orientation to TtoB and justifyContent to end',
+  'orientation to RtoL and justifyContent to end',
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
       newRating._update({
-        orientation: 'TtoB',
+        orientation: 'RtoL',
         justifyContent: 'end'
       })
     }, 2000)
   },
   [
-    notes('For invalid orientation value , default [orientation : LtoR] is applied')
+    notes('Orientation RtoL and justifyContent = end is applied')
   ]
 )
 
@@ -287,7 +279,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For noOfStars = NaN, default value is taken')
+    notes('For noOfStars = NaN, no output')
   ]
 )
 
@@ -316,18 +308,6 @@ ratingStory.addChapter(
 )
 
 ratingStory.addChapter(
-  'noOfStars value greater than maximum permissible',
-  story => {
-    var newRating = new Rating(story, {
-      noOfStars: 1000
-    })
-  },
-  [
-    notes('For noOfStars value greater than maximum permissible, no output')
-  ]
-)
-
-ratingStory.addChapter(
   'rating value NaN',
   story => {
     var newRating = new Rating(story, {
@@ -335,7 +315,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For rating value NaN, default [rating : 5] is applied')
+    notes('For rating value NaN, default [rating : 3.5] is applied')
   ]
 )
 
@@ -347,19 +327,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For negative rating value , default [rating : 5] is applied')
-  ]
-)
-
-ratingStory.addChapter(
-  'rating value greater than noOfStars',
-  story => {
-    var newRating = new Rating(story, {
-      rating: 10
-    })
-  },
-  [
-    notes('For rating value greater than noOfStars, default [rating : 5] is applied')
+    notes('For negative rating value , default [rating : 3.5] is applied')
   ]
 )
 
@@ -421,7 +389,7 @@ ratingStory.addChapter(
     }, 2000)
   },
   [
-    notes('when rating value is greater than noOfStars, default [rating: 3.5] is applied')
+    notes('when rating value is greater than noOfStars, rating = noOfStars is set')
   ]
 )
 
@@ -443,6 +411,27 @@ ratingStory.addChapter(
 
       })
     }, 4000)
+  },
+  [
+    notes('In case of two updations, previous valid value is retained')
+  ]
+)
+
+ratingStory.addChapter(
+  'Count updations in 100ms',
+  story => {
+    var newRating = new Rating(story, {})
+    var count = 0
+    var curTime = 0
+    var startTime = (new Date().getTime() * 1)
+    while (curTime < 100) {
+      newRating._update({
+        padding: 10
+      })
+      count++
+      curTime = (new Date().getTime() * 1) - startTime
+    }
+    console.log('count :' + count)
   },
   [
     notes('In case of two updations, previous valid value is retained')
