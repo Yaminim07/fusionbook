@@ -211,7 +211,7 @@ ratingStory.addChapter(
     var newRating = new Rating(story, {})
     newRating.hasAnimationFrame = false
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         orientation: 'RtoL',
         justifyContent: 'end'
       })
@@ -347,7 +347,7 @@ ratingStory.addChapter(
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         padding: 10
       })
     }, 2000)
@@ -362,7 +362,7 @@ ratingStory.addChapter(
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         width: '900',
         height: '100',
         justifyContent: 'end'
@@ -379,7 +379,7 @@ ratingStory.addChapter(
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         rating: 4
       })
     }, 2000)
@@ -394,7 +394,7 @@ ratingStory.addChapter(
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         rating: 8
       })
     }, 2000)
@@ -409,7 +409,7 @@ ratingStory.addChapter(
   story => {
     var newRating = new Rating(story, {})
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         width: '5',
         height: '300',
         noOfStars: 20
@@ -417,7 +417,7 @@ ratingStory.addChapter(
       })
     }, 2000)
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         width: '2000'
 
       })
@@ -463,7 +463,7 @@ ratingStory.addChapter(
       }
     })
     setTimeout(function () {
-      newRating._update({
+      newRating.update({
         padding: 10
       })
     }, 2000)
@@ -481,8 +481,7 @@ ratingStory.addChapter(
     var curTime = 0
     var startTime = (new Date().getMilliseconds())
     while (curTime <= 100) {
-      newRating.hasAnimationFrame = false
-      newRating._update({
+      newRating.update({
         width: '800',
         height: '100'
       })

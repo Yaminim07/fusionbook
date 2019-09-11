@@ -319,7 +319,7 @@ export default class Rating {
     this._elem.defs.appendChild(grad2)
   }
 
-  _update (_prop) {
+  update (_prop) {
     if (this._validateInput(_prop)) {
       if (this._elem.hasAnimationFrame) {
         window.requestAnimationFrame(() => this._createSvg())
