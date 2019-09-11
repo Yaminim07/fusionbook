@@ -2,6 +2,11 @@
 
 export default class Rating {
   constructor (container, obj) {
+    if (!(container instanceof Element)) {
+      console.error('Invalid container')
+      return
+    }
+
     this._prop = {}
     this._prop.width = '500'
     this._prop.height = '100'
@@ -132,11 +137,11 @@ export default class Rating {
     }
 
     if (obj.hasOwnProperty('onUpdate') && typeof obj.onUpdate === 'function') {
-      this._prop.onUpdate = obj.onUpdate
+      this.onUpdate = obj.onUpdate
     }
 
     if (obj.hasOwnProperty('onDraw') && typeof obj.onDraw === 'function') {
-      this._prop.onDraw = obj.onDraw
+      this.onDraw = obj.onDraw
     }
 
     if (drawSvg) {
@@ -269,7 +274,7 @@ export default class Rating {
       }
     }
 
-    var func = this._prop.onDraw
+    var func = this.onDraw
     if (func) {
       func()
     }
@@ -279,12 +284,12 @@ export default class Rating {
     let dAttr = 'm' + startWidth + ' ' + startHeight + ' ' +
         'l' + -(this._prop.innerBox / 6) + ' ' + (this._prop.innerBox / 3) + ' ' +
         'l' + -(this._prop.innerBox / 3) + ' ' + 0 + ' ' +
-        'l' + (this._prop.innerBox / 5) + ' ' + (this._prop.innerBox / 4) + ' ' +
-        'l' + -(this._prop.innerBox / 5) + ' ' + (5 * this._prop.innerBox / 12) + ' ' +
-        'l' + (this._prop.innerBox / 2) + ' ' + -(this._prop.innerBox / 4) + ' ' +
-        'l' + (this._prop.innerBox / 2) + ' ' + (this._prop.innerBox / 4) + ' ' +
-        'l' + -(this._prop.innerBox / 5) + ' ' + -(5 * this._prop.innerBox / 12) + ' ' +
-        'l' + (this._prop.innerBox / 5) + ' ' + -(this._prop.innerBox / 4) + ' ' +
+        'l' + (this._prop.innerBox / 5) + ' ' + (this._prop.innerBox / 3) + ' ' +
+        'l' + -(this._prop.innerBox / 5) + ' ' + (this._prop.innerBox / 3) + ' ' +
+        'l' + (this._prop.innerBox / 2) + ' ' + -(this._prop.innerBox / 5) + ' ' +
+        'l' + (this._prop.innerBox / 2) + ' ' + (this._prop.innerBox / 5) + ' ' +
+        'l' + -(this._prop.innerBox / 5) + ' ' + -(this._prop.innerBox / 3) + ' ' +
+        'l' + (this._prop.innerBox / 5) + ' ' + -(this._prop.innerBox / 3) + ' ' +
         'l' + -(this._prop.innerBox / 3) + ' ' + 0 + 'z'
     return dAttr
   }
@@ -320,7 +325,7 @@ export default class Rating {
         window.requestAnimationFrame(() => this._createSvg())
         this._elem.hasAnimationFrame = false
       }
-      var func = this._prop.onUpdate
+      var func = this.onUpdate
       if (func) {
         func()
       }

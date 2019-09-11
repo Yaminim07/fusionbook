@@ -4,6 +4,16 @@ import Rating from '../components/html/rating'
 const ratingStory = new Story('rating').addMetas([configs()])
 
 ratingStory.addChapter(
+  'Container validity check',
+  story => {
+    var newRating = new Rating('abc', {})
+  },
+  [
+    notes('Container not valid')
+  ]
+)
+
+ratingStory.addChapter(
   'Default Value',
   story => {
     var newRating = new Rating(story, {})
@@ -90,7 +100,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For invalid fill value, default [fill: red] is applied')
+    notes('For invalid fill value, default [fill: #ff0000] is applied')
   ]
 )
 
@@ -102,7 +112,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For invalid ratedFill value, default [ratedFill: red] is applied')
+    notes('For invalid ratedFill value, default [ratedFill: #ff0000] is applied')
   ]
 )
 
@@ -114,7 +124,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For invalid unratedFill value, default [unratedFill: blue] is applied')
+    notes('For invalid unratedFill value, default [unratedFill: #FA8072] is applied')
   ]
 )
 
@@ -142,7 +152,7 @@ ratingStory.addChapter(
     })
   },
   [
-    notes('For invalid stroke value, default [stroke: blue] is applied')
+    notes('For invalid stroke value, default [stroke: #000000] is applied')
   ]
 )
 
@@ -434,7 +444,7 @@ ratingStory.addChapter(
   'Valid onDraw',
   story => {
     var newRating = new Rating(story, {
-      onDraw: function f () {
+      onDraw: function () {
         console.log('Draw succesful')
       }
     })
