@@ -199,6 +199,7 @@ ratingStory.addChapter(
   'orientation to RtoL and justifyContent to end',
   story => {
     var newRating = new Rating(story, {})
+    newRating.hasAnimationFrame = false
     setTimeout(function () {
       newRating._update({
         orientation: 'RtoL',
@@ -354,7 +355,7 @@ ratingStory.addChapter(
       newRating._update({
         width: '900',
         height: '100',
-        justifyContent: 'right'
+        justifyContent: 'end'
       })
     }, 2000)
   },
@@ -418,44 +419,71 @@ ratingStory.addChapter(
 )
 
 ratingStory.addChapter(
+  'Invalid onUpdate or onDraw',
+  story => {
+    var newRating = new Rating(story, {
+      onUpdate: 'abc'
+    })
+  },
+  [
+    notes('For invalid onUpdate and onDraw, no function is executed')
+  ]
+)
+
+ratingStory.addChapter(
+  'Valid onDraw',
+  story => {
+    var newRating = new Rating(story, {
+      onDraw: function f () {
+        console.log('Draw succesful')
+      }
+    })
+  },
+  [
+    notes('Function in onDraw executed')
+  ]
+)
+
+ratingStory.addChapter(
+  'Valid onUpdate',
+  story => {
+    var newRating = new Rating(story, {
+      onUpdate: function f () {
+        console.log('Update succesful')
+      }
+    })
+    setTimeout(function () {
+      newRating._update({
+        padding: 10
+      })
+    }, 2000)
+  },
+  [
+    notes('Function in onUpdate executed')
+  ]
+)
+
+ratingStory.addChapter(
   'Count updations in 100ms',
   story => {
     var newRating = new Rating(story, {})
     var count = 0
     var curTime = 0
-    var startTime = (new Date().getTime() * 1)
-    while (curTime < 100) {
+    var startTime = (new Date().getMilliseconds())
+    while (curTime <= 100) {
+      newRating.hasAnimationFrame = false
       newRating._update({
-        padding: 10
+        width: '800',
+        height: '100'
       })
       count++
-      curTime = (new Date().getTime() * 1) - startTime
+      curTime = (new Date().getMilliseconds()) - startTime
     }
     console.log('count :' + count)
   },
   [
-    notes('In case of two updations, previous valid value is retained')
+    notes('Performance test')
   ]
 )
-
-// ratingStory.addChapter(
-//   'with a 30px dimensions',
-//   story => {
-//     rating(story, { width: '30px', height: '30px' })
-//   },
-//   [
-//     notes('This is the rating as it appears by default, with 30px width and height')
-//   ]
-// )
-
-// ratingStory.addChapter(
-//   'with a orange color',
-//   story => {
-//     rating(story, { bgColor: 'orange' })
-//   },
-//   [
-//     notes('This is the rating as it appears when rendered with an orange fill.')
-//   ]
-// )
 
 export default ratingStory

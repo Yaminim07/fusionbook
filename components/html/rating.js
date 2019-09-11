@@ -2,42 +2,51 @@
 
 export default class Rating {
   constructor (container, obj) {
-    this.prop = {}
-    this.prop.width = '500'
-    this.prop.height = '100'
-    this.prop.fill = '#ff0000'
-    this.prop.ratedFill = '#ff0000'
-    this.prop.unratedFill = '#FA8072'
-    this.prop.stroke = '#000000'
-    this.prop.ratedStroke = '#000000'
-    this.prop.unratedStroke = '#666666'
-    this.prop.strokeWidth = 0
-    this.prop.orientation = 'LtoR'
-    this.prop.noOfStars = 5
-    this.prop.rating = 3.5
-    this.prop.padding = 5
-    this.prop.justifyContent = 'center'
-    this.prop.alignItems = 'center'
-    this.prop.flow = 'row'
-    this.prop.box = 0
-    this.prop.innerBox = 0
-    this.stars = []
-    this.container = container
-    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    this.defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
-    this.container.appendChild(this.svg)
-    this.svg.appendChild(this.defs)
-    this._validateInput(obj)
+    this._prop = {}
+    this._prop.width = '500'
+    this._prop.height = '100'
+    this._prop.fill = '#ff0000'
+    this._prop.ratedFill = '#ff0000'
+    this._prop.unratedFill = '#FA8072'
+    this._prop.stroke = '#000000'
+    this._prop.ratedStroke = '#000000'
+    this._prop.unratedStroke = '#666666'
+    this._prop.strokeWidth = 0
+    this._prop.orientation = 'LtoR'
+    this._prop.noOfStars = 5
+    this._prop.rating = 3.5
+    this._prop.padding = 5
+    this._prop.justifyContent = 'center'
+    this._prop.alignItems = 'center'
+    this._prop.flow = 'row'
+    this._prop.box = 0
+    this._prop.innerBox = 0
+    this._elem = {}
+    this._elem.stars = []
+    this._elem.container = container
+    this._elem.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    this._elem.defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs')
+    this._elem.container.appendChild(this._elem.svg)
+    this._elem.svg.appendChild(this._elem.defs)
+    this._elem.hasAnimationFrame = false
+    this.onUpdate = null
+    this.onDraw = null
+    if (this._validateInput(obj)) {
+      if (!this._elem.hasAnimationFrame) {
+        window.requestAnimationFrame(() => this._createSvg())
+      }
+    } else {
+      console.error('Invalid parameters for drawing SVG')
+    }
   }
 
   _validateInput (obj) {
     var drawSvg = true
-
     if (obj.hasOwnProperty('width')) {
       let calculatedWidth = getWidth(obj.width)
       if (!calculatedWidth || calculatedWidth < 10) {
       } else {
-        this.prop.width = obj.width
+        this._prop.width = obj.width
       }
     }
 
@@ -45,236 +54,239 @@ export default class Rating {
       let calculatedHeight = getHeight(obj.height)
       if (!calculatedHeight || calculatedHeight < 10) {
       } else {
-        this.prop.height = obj.height
+        this._prop.height = obj.height
       }
     }
 
     if (obj.ratedFill === obj.unratedFill) {
-      obj.ratedFill = this.prop.fill
+      obj.ratedFill = this._prop.fill
     }
 
     if (obj.hasOwnProperty('fill') && checkHexValue(obj.fill)) {
-      this.prop.fill = obj.fill
+      this._prop.fill = obj.fill
     }
 
     if (obj.hasOwnProperty('ratedFill') && checkHexValue(obj.ratedFill)) {
-      this.prop.ratedFill = obj.ratedFill
+      this._prop.ratedFill = obj.ratedFill
     }
 
     if (obj.hasOwnProperty('unratedFill') && checkHexValue(obj.unratedFill)) {
-      this.prop.unratedFill = obj.unratedFill
+      this._prop.unratedFill = obj.unratedFill
     }
 
     if (obj.ratedStroke === obj.unratedStroke) {
-      obj.ratedStroke = this.prop.stroke
+      obj.ratedStroke = this._prop.stroke
     }
 
     if (obj.hasOwnProperty('stroke') && checkHexValue(obj.stroke)) {
-      this.prop.stroke = obj.stroke
+      this._prop.stroke = obj.stroke
     }
 
     if (obj.hasOwnProperty('ratedStroke') && checkHexValue(obj.ratedStroke)) {
-      this.prop.ratedStroke = obj.ratedStroke
+      this._prop.ratedStroke = obj.ratedStroke
     }
 
     if (obj.hasOwnProperty('unratedStroke') && checkHexValue(obj.unratedStroke)) {
-      this.prop.unratedStroke = obj.unratedStroke
+      this._prop.unratedStroke = obj.unratedStroke
     }
 
     if (obj.hasOwnProperty('strokeWidth') && !isNaN(obj.strokeWidth) && obj.strokeWidth > 0) {
-      this.prop.strokeWidth = obj.strokeWidth
+      this._prop.strokeWidth = obj.strokeWidth
     }
 
     if (obj.hasOwnProperty('flow') && ['row', 'column'].includes(obj.flow)) {
-      this.prop.flow = obj.flow
+      this._prop.flow = obj.flow
     }
 
     if (obj.hasOwnProperty('orientation') && ['LtoR', 'RtoL', 'TtoB', 'BtoT'].includes(obj.orientation)) {
-      this.prop.orientation = obj.orientation
+      this._prop.orientation = obj.orientation
     }
 
     if (obj.hasOwnProperty('noOfStars')) {
       if (!isNaN(obj.noOfStars) && !(obj.noOfStars < 0) && !(obj.noOfStars === 0)) {
-        this.prop.noOfStars = obj.noOfStars
+        this._prop.noOfStars = obj.noOfStars
       } else {
         drawSvg = false
       }
     }
 
-    if (obj.hasOwnProperty('rating') && !isNaN(obj.rating) && obj.rating > 0 && obj.rating < this.prop.noOfStars) {
-      this.prop.rating = obj.rating
-    } else if (obj.rating > this.prop.noOfStars) {
-      this.prop.rating = this.prop.noOfStars
+    if (obj.hasOwnProperty('rating') && !isNaN(obj.rating) && obj.rating > 0 && obj.rating < this._prop.noOfStars) {
+      this._prop.rating = obj.rating
+    } else if (obj.rating > this._prop.noOfStars) {
+      this._prop.rating = this._prop.noOfStars
+    }
+    this._prop.box = calculateBoxSize(getWidth(this._prop.width), getHeight(this._prop.height), this._prop.flow, this._prop.noOfStars)
+
+    if (obj.hasOwnProperty('padding') && !isNaN(obj.padding) && !(greaterThanMaximumPadding(this._prop.box, obj.padding)) && (obj.padding > 0)) {
+      this._prop.padding = obj.padding
     }
 
-    if (obj.hasOwnProperty('padding') && !isNaN(obj.padding) && !(greaterThanMaximumPadding(this.prop.box, obj.padding)) && (obj.padding > 0)) {
-      this.prop.padding = obj.padding
-    }
+    this._prop.innerBox = this._prop.box - (2 * this._prop.padding)
 
     if (obj.hasOwnProperty('justifyContent') && ['start', 'end', 'center', 'spaceEvenly'].includes(obj.justifyContent)) {
-      this.prop.justifyContent = obj.justifyContent
+      this._prop.justifyContent = obj.justifyContent
     }
 
     if (obj.hasOwnProperty('alignItems') && ['start', 'end', 'center'].includes(obj.alignItems)) {
-      this.prop.alignItems = obj.alignItems
+      this._prop.alignItems = obj.alignItems
     }
 
-    if (drawSvg) { this._createSvg() }
+    if (obj.hasOwnProperty('onUpdate') && typeof obj.onUpdate === 'function') {
+      this._prop.onUpdate = obj.onUpdate
+    }
+
+    if (obj.hasOwnProperty('onDraw') && typeof obj.onDraw === 'function') {
+      this._prop.onDraw = obj.onDraw
+    }
+
+    if (drawSvg) {
+      return true
+    } else {
+      return false
+    }
   }
 
   _createSvg () {
-    this.svg.setAttribute('width', this.prop.width)
-    this.svg.setAttribute('height', this.prop.height)
-    this.prop.box = calculateBoxSize(getWidth(this.prop.width), getHeight(this.prop.height), this.prop.flow, this.prop.noOfStars)
-    this.prop.innerBox = this.prop.box - (2 * this.prop.padding)
-    let width = getWidth(this.prop.width)
-    let height = getHeight(this.prop.height)
+    this._elem.hasAnimationFrame = true
+    this._elem.svg.setAttribute('width', this._prop.width)
+    this._elem.svg.setAttribute('height', this._prop.height)
+    let width = getWidth(this._prop.width)
+    let height = getHeight(this._prop.height)
 
-    for (let i = this.stars.length; i < this.prop.noOfStars; i++) {
+    for (let i = this._elem.stars.length; i < this._prop.noOfStars; i++) {
       let path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-      this.svg.appendChild(path)
-      this.stars.push(path)
+      this._elem.svg.appendChild(path)
+      this._elem.stars.push(path)
     }
-    if (this.prop.flow === 'row') {
+    if (this._prop.flow === 'row') {
       this._createGradient(0, 100, 0, 0)
-      let startHeight = this.prop.padding; let startWidth = this.prop.box / 2; let increment = this.prop.box
-      if (this.prop.justifyContent === 'start') {
+      let startHeight = this._prop.padding; let startWidth = this._prop.box / 2; let increment = this._prop.box
+      if (this._prop.justifyContent === 'start') {
 
-      } else if (this.prop.justifyContent === 'end') {
-        startWidth += (width) - (this.prop.box * this.prop.noOfStars)
-      } else if (this.prop.justifyContent === 'center') {
-        startWidth += ((width) - (this.prop.box * this.prop.noOfStars)) / 2
+      } else if (this._prop.justifyContent === 'end') {
+        startWidth += (width) - (this._prop.box * this._prop.noOfStars)
+      } else if (this._prop.justifyContent === 'center') {
+        startWidth += ((width) - (this._prop.box * this._prop.noOfStars)) / 2
       } else {
-        startWidth += (width - (this.prop.box * this.prop.noOfStars)) / (this.prop.noOfStars)
-        increment += (width - (this.prop.box * this.prop.noOfStars)) / (this.prop.noOfStars)
+        startWidth += (width - (this._prop.box * this._prop.noOfStars)) / (this._prop.noOfStars)
+        increment += (width - (this._prop.box * this._prop.noOfStars)) / (this._prop.noOfStars)
       }
 
-      if (this.prop.alignItems === 'start') {} else if (this.prop.alignItems === 'center') {
-        startHeight += (height - this.prop.box) / 2
+      if (this._prop.alignItems === 'start') {} else if (this._prop.alignItems === 'center') {
+        startHeight += (height - this._prop.box) / 2
       } else {
-        startHeight += (height - this.prop.box)
+        startHeight += (height - this._prop.box)
       }
 
-      for (let i = 0; i < this.stars.length; i++) {
-        this.stars[i].setAttribute('d', this._dAttr(startWidth, startHeight))
+      for (let i = 0; i < this._elem.stars.length; i++) {
+        this._elem.stars[i].setAttribute('d', this._dAttr(startWidth, startHeight))
         startWidth += increment
       }
     } else { // for column flow
       this._createGradient(0, 0, 0, 100)
-      let startHeight = (this.prop.padding); let startWidth = this.prop.box / 2; let increment = this.prop.box
-      if (this.prop.alignItems === 'start') {} else if (this.prop.alignItems === 'center') {
-        startHeight += (height - (this.prop.box * this.prop.noOfStars)) / 2
+      let startHeight = (this._prop.padding); let startWidth = this._prop.box / 2; let increment = this._prop.box
+      if (this._prop.alignItems === 'start') {} else if (this._prop.alignItems === 'center') {
+        startHeight += (height - (this._prop.box * this._prop.noOfStars)) / 2
       } else {
-        startHeight += (height - (this.prop.box * this.prop.noOfStars))
+        startHeight += (height - (this._prop.box * this._prop.noOfStars))
       }
 
-      if (this.prop.justifyContent === 'start') {
+      if (this._prop.justifyContent === 'start') {
 
-      } else if (this.prop.justifyContent === 'end') {
-        startWidth += (width) - (this.prop.box * this.prop.noOfStars)
-      } else if (this.prop.justifyContent === 'center') {
-        startWidth += ((width) - (this.prop.box * this.prop.noOfStars)) / 2
+      } else if (this._prop.justifyContent === 'end') {
+        startWidth += (width) - (this._prop.box * this._prop.noOfStars)
+      } else if (this._prop.justifyContent === 'center') {
+        startWidth += ((width) - (this._prop.box * this._prop.noOfStars)) / 2
       } else {
-        startWidth += (width - (this.prop.box * this.prop.noOfStars)) / (this.prop.noOfStars)
-        increment += (width - (this.prop.box * this.prop.noOfStars)) / (this.prop.noOfStars)
+        startWidth += (width - (this._prop.box * this._prop.noOfStars)) / (this._prop.noOfStars)
+        increment += (width - (this._prop.box * this._prop.noOfStars)) / (this._prop.noOfStars)
       }
 
-      for (let i = 0; i < this.stars.length; i++) {
-        this.stars[i].setAttribute('d', this._dAttr(startWidth, startHeight))
+      for (let i = 0; i < this._elem.stars.length; i++) {
+        this._elem.stars[i].setAttribute('d', this._dAttr(startWidth, startHeight))
         startHeight += increment
       }
     }
 
-    for (let i = this.prop.noOfStars; i < this.stars.length; i++) { // removing stars
-      let elem = this.stars.pop()
-      this.svg.removeChild(elem)
+    for (let i = this._prop.noOfStars; i < this._elem.stars.length; i++) { // removing stars
+      let _elem = this._elem.stars.pop()
+      this._elem.svg.removeChild(_elem)
     }
 
-    let rated = Math.trunc(this.prop.rating)
-    let fracRating = ((this.prop.rating - Math.trunc(this.prop.rating)).toFixed(2)) * 100
-    if (this.prop.orientation === 'LtoR' || this.prop.orientation === 'TtoB') {
-      for (let i = 0; i < this.stars.length; i++) {
-        if (i < rated) { this.stars[i].setAttribute('fill', this.prop.ratedFill) } else { this.stars[i].setAttribute('fill', this.prop.unratedFill) }
+    let rated = Math.trunc(this._prop.rating)
+    let fracRating = ((this._prop.rating - Math.trunc(this._prop.rating)).toFixed(2)) * 100
+    if (this._prop.orientation === 'LtoR' || this._prop.orientation === 'TtoB') {
+      for (let i = 0; i < this._elem.stars.length; i++) {
+        if (i < rated) { this._elem.stars[i].setAttribute('fill', this._prop.ratedFill) } else { this._elem.stars[i].setAttribute('fill', this._prop.unratedFill) }
       }
 
-      for (let i = 0; i < this.stars.length; i++) {
-        if (i < rated) { this.stars[i].setAttribute('stroke', this.prop.ratedStroke) } else { this.stars[i].setAttribute('stroke', this.prop.unratedStroke) }
-        this.stars[i].setAttribute('stroke-width', this.prop.strokeWidth)
+      for (let i = 0; i < this._elem.stars.length; i++) {
+        if (i < rated) { this._elem.stars[i].setAttribute('stroke', this._prop.ratedStroke) } else { this._elem.stars[i].setAttribute('stroke', this._prop.unratedStroke) }
+        this._elem.stars[i].setAttribute('stroke-width', this._prop.strokeWidth)
       }
     } else {
-      for (let i = this.stars.length - 1; i >= 0; i--) {
-        if ((this.prop.noOfStars - i - 1) < rated) { this.stars[i].setAttribute('fill', this.prop.ratedFill) } else { this.stars[i].setAttribute('fill', this.prop.unratedFill) }
+      for (let i = this._elem.stars.length - 1; i >= 0; i--) {
+        if ((this._prop.noOfStars - i - 1) < rated) { this._elem.stars[i].setAttribute('fill', this._prop.ratedFill) } else { this._elem.stars[i].setAttribute('fill', this._prop.unratedFill) }
       }
 
-      for (let i = this.stars.length - 1; i >= 0; i--) {
-        if ((this.prop.noOfStars - i - 1) < rated) { this.stars[i].setAttribute('stroke', this.prop.ratedStroke) } else { this.stars[i].setAttribute('stroke', this.prop.unratedStroke) }
-        this.stars[i].setAttribute('stroke-width', this.prop.strokeWidth)
+      for (let i = this._elem.stars.length - 1; i >= 0; i--) {
+        if ((this._prop.noOfStars - i - 1) < rated) { this._elem.stars[i].setAttribute('stroke', this._prop.ratedStroke) } else { this._elem.stars[i].setAttribute('stroke', this._prop.unratedStroke) }
+        this._elem.stars[i].setAttribute('stroke-width', this._prop.strokeWidth)
       }
     }
 
     if (fracRating) {
-      if (['LtoR', 'TtoB'].includes(this.prop.orientation)) {
-        this.defs.children[0].children[0].setAttribute('offset', fracRating + '%')
-        this.defs.children[0].children[0].setAttribute('stop-color', this.prop.ratedFill)
-        this.defs.children[0].children[1].setAttribute('offset', (100 - fracRating) + '%')
-        this.defs.children[0].children[1].setAttribute('stop-color', this.prop.unratedFill)
+      if (['LtoR', 'TtoB'].includes(this._prop.orientation)) {
+        this._elem.defs.children[0].children[0].setAttribute('offset', fracRating + '%')
+        this._elem.defs.children[0].children[0].setAttribute('stop-color', this._prop.ratedFill)
+        this._elem.defs.children[0].children[1].setAttribute('offset', (100 - fracRating) + '%')
+        this._elem.defs.children[0].children[1].setAttribute('stop-color', this._prop.unratedFill)
       } else {
-        this.defs.children[0].children[0].setAttribute('offset', fracRating + '%')
-        this.defs.children[0].children[0].setAttribute('stop-color', this.prop.unratedFill)
-        this.defs.children[0].children[1].setAttribute('offset', (100 - fracRating) + '%')
-        this.defs.children[0].children[1].setAttribute('stop-color', this.prop.ratedFill)
+        this._elem.defs.children[0].children[0].setAttribute('offset', fracRating + '%')
+        this._elem.defs.children[0].children[0].setAttribute('stop-color', this._prop.unratedFill)
+        this._elem.defs.children[0].children[1].setAttribute('offset', (100 - fracRating) + '%')
+        this._elem.defs.children[0].children[1].setAttribute('stop-color', this._prop.ratedFill)
       }
 
-      if (['LtoR', 'TtoB'].includes(this.prop.orientation)) {
-        this.defs.children[1].children[0].setAttribute('offset', fracRating + '%')
-        this.defs.children[1].children[0].setAttribute('stop-color', this.prop.ratedStroke)
-        this.defs.children[1].children[1].setAttribute('offset', (100 - fracRating) + '%')
-        this.defs.children[1].children[1].setAttribute('stop-color', this.prop.unratedStroke)
+      if (['LtoR', 'TtoB'].includes(this._prop.orientation)) {
+        this._elem.defs.children[1].children[0].setAttribute('offset', fracRating + '%')
+        this._elem.defs.children[1].children[0].setAttribute('stop-color', this._prop.ratedStroke)
+        this._elem.defs.children[1].children[1].setAttribute('offset', (100 - fracRating) + '%')
+        this._elem.defs.children[1].children[1].setAttribute('stop-color', this._prop.unratedStroke)
       } else {
-        this.defs.children[1].children[0].setAttribute('offset', fracRating + '%')
-        this.defs.children[1].children[0].setAttribute('stop-color', this.prop.unratedStroke)
-        this.defs.children[1].children[1].setAttribute('offset', (100 - fracRating) + '%')
-        this.defs.children[1].children[1].setAttribute('stop-color', this.prop.ratedStroke)
+        this._elem.defs.children[1].children[0].setAttribute('offset', fracRating + '%')
+        this._elem.defs.children[1].children[0].setAttribute('stop-color', this._prop.unratedStroke)
+        this._elem.defs.children[1].children[1].setAttribute('offset', (100 - fracRating) + '%')
+        this._elem.defs.children[1].children[1].setAttribute('stop-color', this._prop.ratedStroke)
       }
 
-      if (['LtoR', 'TtoB'].includes(this.prop.orientation)) {
-        this.stars[rated].setAttribute('fill', 'url(#grad1)')
-        this.stars[rated].setAttribute('stroke', 'url(#grad2)')
+      if (['LtoR', 'TtoB'].includes(this._prop.orientation)) {
+        this._elem.stars[rated].setAttribute('fill', 'url(#grad1)')
+        this._elem.stars[rated].setAttribute('stroke', 'url(#grad2)')
       } else {
-        this.stars[this.prop.noOfStars - rated].setAttribute('fill', 'url(#grad1)')
-        this.stars[this.prop.noOfStars - rated].setAttribute('stroke', 'url(#grad2)')
+        this._elem.stars[this._prop.noOfStars - rated].setAttribute('fill', 'url(#grad1)')
+        this._elem.stars[this._prop.noOfStars - rated].setAttribute('stroke', 'url(#grad2)')
       }
+    }
+
+    var func = this._prop.onDraw
+    if (func) {
+      func()
     }
   }
 
   _dAttr (startWidth, startHeight) {
     let dAttr = 'm' + startWidth + ' ' + startHeight + ' ' +
-        'l' + -(this.prop.innerBox / 4) + ' ' + (this.prop.innerBox / 3) + ' ' +
-        'l' + -(this.prop.innerBox / 4) + ' ' + 0 + ' ' +
-        'l' + (this.prop.innerBox / 4) + ' ' + (this.prop.innerBox / 3) + ' ' +
-        'l' + -(this.prop.innerBox / 4) + ' ' + (this.prop.innerBox / 3) + ' ' +
-        'l' + (this.prop.innerBox / 2) + ' ' + -(this.prop.innerBox / 6) + ' ' +
-        'l' + (this.prop.innerBox / 2) + ' ' + (this.prop.innerBox / 6) + ' ' +
-        'l' + -(this.prop.innerBox / 4) + ' ' + -(this.prop.innerBox / 3) + ' ' +
-        'l' + (this.prop.innerBox / 4) + ' ' + -(this.prop.innerBox / 3) + ' ' +
-        'l' + -(this.prop.innerBox / 4) + ' ' + 0 + 'z'
+        'l' + -(this._prop.innerBox / 6) + ' ' + (this._prop.innerBox / 3) + ' ' +
+        'l' + -(this._prop.innerBox / 3) + ' ' + 0 + ' ' +
+        'l' + (this._prop.innerBox / 5) + ' ' + (this._prop.innerBox / 4) + ' ' +
+        'l' + -(this._prop.innerBox / 5) + ' ' + (5 * this._prop.innerBox / 12) + ' ' +
+        'l' + (this._prop.innerBox / 2) + ' ' + -(this._prop.innerBox / 4) + ' ' +
+        'l' + (this._prop.innerBox / 2) + ' ' + (this._prop.innerBox / 4) + ' ' +
+        'l' + -(this._prop.innerBox / 5) + ' ' + -(5 * this._prop.innerBox / 12) + ' ' +
+        'l' + (this._prop.innerBox / 5) + ' ' + -(this._prop.innerBox / 4) + ' ' +
+        'l' + -(this._prop.innerBox / 3) + ' ' + 0 + 'z'
     return dAttr
-    // path.setAttribute('d', dAttr)
-    // if (index < this.prop.rating) {
-    //   path.style.fill = this.prop.ratedFill
-    //   path.style.stroke = this.prop.ratedStroke
-    // } else {
-    //   path.style.fill = this.prop.unratedFill
-    //   path.style.stroke = this.prop.unratedStroke
-    // }
-    // if (getFraction(this.prop.rating) !== 0) {
-    //   if (getPartialRated(this.prop.rating) === index) {
-    //     path.style.fill = 'url(#grad)'
-    //   }
-    // }
-    // path.style.strokeWidth = this.prop.strokeWidth
-    // this.svg.appendChild(path)
-    // this.stars.push(path)
   }
 
   _createGradient (x1, x2, y1, y2) {
@@ -285,8 +297,6 @@ export default class Rating {
     grad1.setAttribute('y2', y2 + '%')
     grad1.setAttribute('id', 'grad1')
     let stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
-    // stop1.setAttribute('offset', (getFraction(this.prop.rating) + '%'))
-    // stop1.setAttribute('stop-color', this.prop.ratedFill)
     var stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
     grad1.appendChild(stop1)
     grad1.appendChild(stop2)
@@ -298,16 +308,25 @@ export default class Rating {
     grad2.setAttribute('id', 'grad2')
     var stop3 = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
     var stop4 = document.createElementNS('http://www.w3.org/2000/svg', 'stop')
-    // stop2.setAttribute('offset', (getFraction(this.prop.rating) + '%'))
-    // stop2.setAttribute('stop-color', this.prop.unratedFill)
     grad2.appendChild(stop3)
     grad2.appendChild(stop4)
-    this.defs.appendChild(grad1)
-    this.defs.appendChild(grad2)
+    this._elem.defs.appendChild(grad1)
+    this._elem.defs.appendChild(grad2)
   }
 
-  _update (prop) {
-    this._validateInput(prop)
+  _update (_prop) {
+    if (this._validateInput(_prop)) {
+      if (this._elem.hasAnimationFrame) {
+        window.requestAnimationFrame(() => this._createSvg())
+        this._elem.hasAnimationFrame = false
+      }
+      var func = this._prop.onUpdate
+      if (func) {
+        func()
+      }
+    } else {
+      console.error('Invalid parameters for drawing SVG')
+    }
   }
 }
 
@@ -323,12 +342,6 @@ function calculateBoxSize (width, height, flow, noOfStars) {
   } else {
     return ((height / noOfStars) < width) ? (height / noOfStars) : width
   }
-}
-
-function greaterThanMaximumStars (width, height, orientation, noOfStars) {
-  let box = calculateBoxSize(width, height, orientation, noOfStars)
-  if (box <= 10) { return true }
-  return false
 }
 
 function greaterThanMaximumPadding (box, padding) {
